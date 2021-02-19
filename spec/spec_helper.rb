@@ -1,9 +1,6 @@
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
-
 $: << File.expand_path("../../lib", __FILE__)
 
-require 'database_cleaner'
+require 'database_cleaner/mongoid'
 require 'mongoid'
 require 'mongoid-rspec'
 require 'mongoid_token'
@@ -15,7 +12,7 @@ RSpec.configure do |config|
 
   config.include Mongoid::Matchers
   config.before(:suite) do
-    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.strategy = :deletion
   end
 
   config.after(:each) do
