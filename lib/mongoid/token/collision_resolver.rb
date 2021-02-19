@@ -25,14 +25,17 @@ module Mongoid
       private
       def alias_method_with_collision_resolution(method)
         handler = self
-        klass.send(:define_method, :"#{method.to_s}_with_#{handler.field_name}_safety") do |method_options = {}|
+        adhoc_module = Module.new
+
+        adhoc_module.send(:define_method, method) do |method_options = {}|
           self.resolve_token_collisions handler do
             with(write: { w: 1 }) do
-              send(:"#{method.to_s}_without_#{handler.field_name}_safety", method_options)
+              super(method_options)
             end
           end
         end
-        klass.alias_method_chain method.to_sym, :"#{handler.field_name}_safety"
+
+        klass.prepend adhoc_module
       end
     end
   end
